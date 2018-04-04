@@ -14,9 +14,9 @@ class PartyModelForm(forms.ModelForm):
 		))
 	# localize tells us that this is in localtime so it converts to UTC for storage
 	party_time = forms.SplitDateTimeField(label='', localize=True, widget=forms.SplitDateTimeWidget(
-		date_attrs={'placeholder': 'Date: mm/dd/yy', 'class': 'form-control'}, 
-		time_attrs={'placeholder': 'Time: hh:mm AM/PM or hh:mm 24-hr', 'class': 'form-control'}
-		), input_time_formats=['%I:%M %p', '%H:%M', '%H:%M:%S'], help_text='specify AM or PM if using a 12 hour clock')
+		date_attrs={'placeholder': 'Date: mm/dd/yy','type': 'date', 'class': 'form-control'}, 
+		time_attrs={'placeholder': 'Time: hh:mm AM/PM or hh:mm 24-hr','type': 'time', 'class': 'form-control'}
+		), input_time_formats=['%I:%M %p', '%H:%M', '%H:%M:%S'])
 	
 	thumbnail = forms.ImageField(label='Thumbnail')
 
