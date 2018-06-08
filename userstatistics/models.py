@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth import get_user_model
 from django.conf import settings
-
-from parties.models import Party
-
 User = get_user_model()
 # Create your models here.
 time_interval_in_minutes = 30
@@ -16,8 +13,7 @@ class StatisticsInfo(models.Model):
 #To link back to user's account
 	user 				= models.ForeignKey(settings.AUTH_USER_MODEL,
 						on_delete=models.CASCADE)
-	max_profit_event 	= models.ForeignKey(Party,
-						on_delete=models.CASCADE, null=True)
+	max_profit_event 	= models.IntegerField(default = -1)
 	max_profit 			= models.DecimalField(max_digits=12,\
 	 							decimal_places=2, default=0)
 	#LOTTERY STATISTICS

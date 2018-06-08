@@ -16,8 +16,7 @@ class NotificationListAPIView(generics.ListAPIView):
 
 	# this interacts with the ajax call to this url
 	def get_queryset(self, *args, **kwargs):
-		qs = self.request.user.notifs_list.order_by('-time_created')
-		# qs = Notification.objects.filter(user__id=self.request.user.id).order_by('-time_created')
+		qs = Notification.objects.filter(user__id=self.request.user.id).order_by('-time_created')
 		return qs
 
 # this view sets the user profile as not having new notifs

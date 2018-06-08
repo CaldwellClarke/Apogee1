@@ -15,7 +15,7 @@ def buyout_update_end_stats(party_obj):
 	user_stats_page = StatisticsInfo.objects.get(user=party_obj.user)
 	if event_earnings > user_stats_page.max_profit:
 		user_stats_page.max_profit = event_earnings
-		user_stats_page.max_profit_event = party_obj
+		user_stats_page.max_profit_event = party_obj.pk
 
 	user_stats_page.buyout_num_events = F('buyout_num_events') + 1
 	user_stats_page.buyout_total_earnings = F('buyout_total_earnings')\
@@ -92,7 +92,7 @@ def lottery_update_end_stats(party_obj):
 	user_stats_page = StatisticsInfo.objects.get(user=party_obj.user)
 	if event_earnings > user_stats_page.max_profit:
 		user_stats_page.max_profit = event_earnings
-		user_stats_page.max_profit_event = party_obj
+		user_stats_page.max_profit_event = party_obj.pk
 
 	user_stats_page.lottery_total_participants =\
 							F('lottery_total_participants')+total_participants
@@ -170,8 +170,7 @@ def lottery_update_join_stats(party_obj):
 #Updates statistic page for all relevant
 #info in regards to the event ending
 def bid_update_end_stats(party_obj):
-	# bid_list = Bid.objects.filter(party=party_obj)
-	bid_list = party_obj.bids_list.all()
+	bid_list = Bid.objects.filter(party=party_obj.pk)
 
 	event_earnings = 0
 
@@ -185,7 +184,7 @@ def bid_update_end_stats(party_obj):
 
 	if event_earnings > user_stats_page.max_profit:
 		user_stats_page.max_profit = event_earnings
-		user_stats_page.max_profit_event = party_obj
+		user_stats_page.max_profit_event = party_obj.pk
 	user_stats_page.max_bid_event = max_bid
 	user_stats_page.bid_num_events = F('bid_num_events') + 1
 	user_stats_page.bid_total_earnings = F('bid_total_earnings')\
