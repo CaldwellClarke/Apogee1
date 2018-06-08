@@ -35,31 +35,16 @@ class NotificationModelSerializer(serializers.ModelSerializer):
 
 	# The methods below define the SerializerMethodFields
 	def get_party_title(self, obj):
-		try:
-			party = Party.objects.get(pk=obj.party)
-			return party.title
-		except:
-			pass
-		return None
+		return obj.party.title
 
 	def get_party_time(self, obj):
-		try:
-			party = Party.objects.get(pk=obj.party)
-			# strftime is python datetime method. the localtime call 
-			# converts it back to the local time because it is converted 
-			# to UTC when it's stored in the database
-			tz_converted = timezone.localtime(party.party_time)
-			# the % is just formatting
-			return tz_converted.strftime('%b %d at %I:%M %p')
-		except:
-			pass
-		return None
+		# strftime is python datetime method. the localtime call 
+		# converts it back to the local time because it is converted 
+		# to UTC when it's stored in the database
+		tz_converted = timezone.localtime(obj.party.party_time)
+		# the % is just formatting
+		return tz_converted.strftime('%b %d at %I:%M %p')
 
 	def get_party_owner(self, obj):
-		try:
-			party = Party.objects.get(pk=obj.party)
-			return party.user.username
-		except:
-			pass
-		return None
+		return obj.party.user.username
 	

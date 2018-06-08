@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Q, Count
 
+from parties import partyHandling
 from bids.models import Bid
 from parties.models import Party
 from .pagination import StandardResultsPagination
@@ -18,7 +19,7 @@ class StarToggleAPIView(APIView):
 		# gets the object that is being starred
 		party_qs = Party.objects.filter(pk=pk)
 		if request.user.is_authenticated:
-			is_starred = Party.objects.star_toggle(request.user, party_qs.first())
+			is_starred = partyHandling.star_toggle(request.user, party_qs.first())
 			return Response({'starred': is_starred})
 			return Response({'message': 'Not Allowed'})
 
@@ -38,7 +39,7 @@ class BidAPIView(APIView):
 		#if party_event is bid	
 		if party_event_type == 2:
 			if request.user.is_authenticated:
-				bid_table = Party.objects.bid_add(request.user, party_qeryset.first(), bids)
+				bid_table = partyHandling.bid_add(request.user, party_qeryset.first(), bids)
 				return Response({'bid_accepted': bid_table["bid_accepted"],
 								'min_bid': bid_table["min_bid"],
 								'error_message':bid_table["error_message"]
@@ -57,7 +58,7 @@ class BuyoutLotteryAPIView(APIView):
 		#if party_event is lottery
 		if party_event_type == 1:
 			if request.user.is_authenticated:
-				joined_table = Party.objects.lottery_add(request.user, party_qeryset.first())
+				joined_table = partyHandling.lottery_add(request.user, party_qeryset.first())
 				return Response({'joined': joined_table["is_joined"],
 								'num_joined':joined_table["num_joined"],
 								'error_message':joined_table["error_message"]
@@ -70,7 +71,7 @@ class BuyoutLotteryAPIView(APIView):
 			})
 		else:
 			if request.user.is_authenticated:
-				buy_table = Party.objects.buyout_add(request.user, party_qeryset.first())
+				buy_table = partyHandling.buyout_add(request.user, party_qeryset.first())
 				return Response({'won':buy_table["winner"],
 								'num_curr_winners':buy_table["num_winners"],
 								'error_message':buy_table["error_message"]

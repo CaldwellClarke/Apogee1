@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+
+from parties.models import Party
 # Create your models here.
 
 class NotificationManager(models.Manager):
@@ -12,9 +14,10 @@ class NotificationManager(models.Manager):
 class Notification(models.Model):
 	action 				= models.CharField(max_length=30)
 	user 				= models.ForeignKey(settings.AUTH_USER_MODEL,
-						on_delete=models.CASCADE)
+						on_delete=models.CASCADE,related_name="notifs_list")
 	time_created 		= models.DateTimeField(auto_now_add=True)
-	party 				= models.IntegerField(default = 0)
+	party 				= models.ForeignKey(Party,
+						on_delete=models.CASCADE)
 	seen 				= models.BooleanField(default=False)
 
 	# this just allows the notification objects to use the manager methods

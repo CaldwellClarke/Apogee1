@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
+from parties.models import Party
 # from parties.models import Party
 
 from .validators import validate_bid_amount
@@ -16,7 +17,8 @@ class Bid(models.Model):
 	 validators =[validate_bid_amount])
 	user 		= models.ForeignKey(settings.AUTH_USER_MODEL,
 					on_delete=models.CASCADE)
-	party 		= models.IntegerField(default = 0)
+	party 		= models.ForeignKey(Party,
+						on_delete=models.CASCADE, related_name="bids_list")
 	def __str__(self):
 		return str(self.bid_amount)
 
