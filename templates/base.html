@@ -50,6 +50,7 @@ of the formatting in the head, so it must be imported into every file. -->
     <!-- you can access the apogee text by calling block.super, so all other pages just call that in their block title section -->
     <title>{% block title %}Apogee{% endblock title %}</title>
   </head>
+
   <body>
 
 
@@ -76,7 +77,7 @@ of the formatting in the head, so it must be imported into every file. -->
     <!-- <script src='{% static "js/bootstrap.min.js" %}'></script> -->
     <!-- CDN version of Bootstrap JS -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+    <!-- <script src='{%static "js/parties/party-rendering-detail.js"%}'></script> -->
     <!-- this contains all of the js used to parties. it's here so that we can use the same rendering in every view that needs it -->
     <script>
       // this handles notifications click. its not a function because it needs to 
@@ -99,358 +100,358 @@ of the formatting in the head, so it must be imported into every file. -->
 
       // JS search function from stack overflow at kirr.co/itd0rd
       // not sure how it works
-      function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-          results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-      }
+      // function getParameterByName(name, url) {
+      //   if (!url) url = window.location.href;
+      //   name = name.replace(/[\[\]]/g, "\\$&");
+      //   let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      //     results = regex.exec(url);
+      //   if (!results) return null;
+      //   if (!results[2]) return '';
+      //   return decodeURIComponent(results[2].replace(/\+/g, " "));
+      // }
 
-      // this function checks to see if lottery had been selected as the event type 
-      // if it has, it makes the max_entrants piece visible. otherwise, its hidden.
-      // it only gets called on the create event page.
-      function check_event_type(type) {
-        // if the event is a lottery
-        if(type == 1) {
-          // the id tells us where our change is supposed to occur
-          // this unhides the max entrants field
-          $('#div_id_max_entrants').prop('hidden', false);
-          // this hides the minimum bid field
-          $('#div_id_minimum_bid').prop('hidden', true);
-          // this sets the text for the num winners field
-          $("#div_id_num_possible_winners").children('label').text('Number of possible winners*');
-          // this sets the text for cost
-          $("#div_id_cost").children('label').text('Cost ($)*');
-        // if the event is an auction
-        } else if (type == 2) {
-          // this hides the max entrants field
-          $('#div_id_max_entrants').prop('hidden', true);
-          // this hides the minimum bid field
-          $('#div_id_minimum_bid').prop('hidden', false);
-          // this sets the text for the num winners field
-          $("#div_id_num_possible_winners").children('label').text('Number of possible winners*');
-           // this sets the text for cost
-          $("#div_id_cost").children('label').text('Starting Bid ($)*');
-        // if the event is a buy
-        } else {
-          // this hides the max entrants field
-          $('#div_id_max_entrants').prop('hidden', true);
-          // this hides the minimum bid field
-          $('#div_id_minimum_bid').prop('hidden', true);
-          // this sets the text for the num winners field
-          $("#div_id_num_possible_winners").children('label').text('Number of purchases available*');
-           // this sets the text for cost
-          $("#div_id_cost").children('label').text('Cost ($)*');
-        }
-      }
+      // // this function checks to see if lottery had been selected as the event type 
+      // // if it has, it makes the max_entrants piece visible. otherwise, its hidden.
+      // // it only gets called on the create event page.
+      // function check_event_type(type) {
+      //   // if the event is a lottery
+      //   if(type == 1) {
+      //     // the id tells us where our change is supposed to occur
+      //     // this unhides the max entrants field
+      //     $('#div_id_max_entrants').prop('hidden', false);
+      //     // this hides the minimum bid field
+      //     $('#div_id_minimum_bid').prop('hidden', true);
+      //     // this sets the text for the num winners field
+      //     $("#div_id_num_possible_winners").children('label').text('Number of possible winners*');
+      //     // this sets the text for cost
+      //     $("#div_id_cost").children('label').text('Cost ($)*');
+      //   // if the event is an auction
+      //   } else if (type == 2) {
+      //     // this hides the max entrants field
+      //     $('#div_id_max_entrants').prop('hidden', true);
+      //     // this hides the minimum bid field
+      //     $('#div_id_minimum_bid').prop('hidden', false);
+      //     // this sets the text for the num winners field
+      //     $("#div_id_num_possible_winners").children('label').text('Number of possible winners*');
+      //      // this sets the text for cost
+      //     $("#div_id_cost").children('label').text('Starting Bid ($)*');
+      //   // if the event is a buy
+      //   } else {
+      //     // this hides the max entrants field
+      //     $('#div_id_max_entrants').prop('hidden', true);
+      //     // this hides the minimum bid field
+      //     $('#div_id_minimum_bid').prop('hidden', true);
+      //     // this sets the text for the num winners field
+      //     $("#div_id_num_possible_winners").children('label').text('Number of purchases available*');
+      //      // this sets the text for cost
+      //     $("#div_id_cost").children('label').text('Cost ($)*');
+      //   }
+      // }
 
 
-      // this is the notification rendering section. it operates similarly to 
-      // the party container function
-      function loadNotificationContainer(notifContainerID) {
-        // VARIABLES
-         // this is the set of notifications in the api
-        let notifList = [];
-        // this links to the following page in the api
-        let nextNotifUrl;
-        // this is the selector for where we're putting the notification info
-        let notifContainer;
-        if (notifContainerID){
-          notifContainer = $('#' + notifContainerID)
-        } else {
-          notifContainer = $('#notif-container')
-        }
-        // url that allows us to get the api data. second is the default
-        // data url should be defined in the container specified in the HTML
-        let initialUrl = notifContainer.attr('data-url') || '/api/notifications/';
+      // // this is the notification rendering section. it operates similarly to 
+      // // the party container function
+      // function loadNotificationContainer(notifContainerID) {
+      //   // VARIABLES
+      //    // this is the set of notifications in the api
+      //   let notifList = [];
+      //   // this links to the following page in the api
+      //   let nextNotifUrl;
+      //   // this is the selector for where we're putting the notification info
+      //   let notifContainer;
+      //   if (notifContainerID){
+      //     notifContainer = $('#' + notifContainerID)
+      //   } else {
+      //     notifContainer = $('#notif-container')
+      //   }
+      //   // url that allows us to get the api data. second is the default
+      //   // data url should be defined in the container specified in the HTML
+      //   let initialUrl = notifContainer.attr('data-url') || '/api/notifications/';
 
-        // TRIGGER FUNCTIONS
-        // this changes the seen boolean on each notification on a mouseover
-        $(document.body).on('mouseover', '#notif-display', function(e){
-          e.preventDefault()
-          let this_ = $(this)
-          // tells us if the notification has been seen
-          let seen = this_.attr('seen-id')
-          // gets the notification id for ajax
-          let notif_id = this_.attr('data-id')
-          // only toggle the color and call to the api is it hasnt been seen yet
-          if (seen == 'false'){
-            this_.removeClass('grey-background')
-            // api endpoint
-            let notifUrl = '/api/notifications/' + notif_id 
-            // ajax is what actually accesses the API
-            $.ajax({
-              method: 'GET',
-              url: notifUrl,
-              success: function(data){
-                // this changes the seen attribute so the method doesnt keep triggering
-                this_.attr('seen-id', 'true')
-              }, 
-              error: function(data){
-                console.log('error')
-                console.log(data)
-              }
-            })
-          }
-        })
+      //   // TRIGGER FUNCTIONS
+      //   // this changes the seen boolean on each notification on a mouseover
+      //   $(document.body).on('mouseover', '#notif-display', function(e){
+      //     e.preventDefault()
+      //     let this_ = $(this)
+      //     // tells us if the notification has been seen
+      //     let seen = this_.attr('seen-id')
+      //     // gets the notification id for ajax
+      //     let notif_id = this_.attr('data-id')
+      //     // only toggle the color and call to the api is it hasnt been seen yet
+      //     if (seen == 'false'){
+      //       this_.removeClass('grey-background')
+      //       // api endpoint
+      //       let notifUrl = '/api/notifications/' + notif_id 
+      //       // ajax is what actually accesses the API
+      //       $.ajax({
+      //         method: 'GET',
+      //         url: notifUrl,
+      //         success: function(data){
+      //           // this changes the seen attribute so the method doesnt keep triggering
+      //           this_.attr('seen-id', 'true')
+      //         }, 
+      //         error: function(data){
+      //           console.log('error')
+      //           console.log(data)
+      //         }
+      //       })
+      //     }
+      //   })
 
-        // RENDERING FUNCTIONS
-        // this is the formatting for thumbnails
-        function formatNotification(notifValue){
-          // VARIABLES
-          let card_highlight = '';
-          let seen = 'true'
-          // sets the seen vs unseen display parameters
-          if (notifValue.seen == false){
-            card_highlight = 'grey-background'
-            seen = 'false'
-          }
+      //   // RENDERING FUNCTIONS
+      //   // this is the formatting for thumbnails
+      //   function formatNotification(notifValue){
+      //     // VARIABLES
+      //     let card_highlight = '';
+      //     let seen = 'true'
+      //     // sets the seen vs unseen display parameters
+      //     if (notifValue.seen == false){
+      //       card_highlight = 'grey-background'
+      //       seen = 'false'
+      //     }
 
-          // NOTIFICATION TEXT
-          let notif_text = ''
-          let link_url = 'href="/events/' + notifValue.party  
-          // this sets the text for the 5 notification types
-          if (notifValue.action == 'owner_event_close'){
-            notif_text = 'Your event, <strong>' + notifValue.party_title + '</strong>, has closed.'
-          } else if (notifValue.action == 'owner_reminder'){
-            notif_text = 'Your event, <strong>' + notifValue.party_title + '</strong>, starts in 10 minutes!'
-          } else if (notifValue.action == 'fan_reminder'){
-            notif_text = '<strong>' + notifValue.party_title + '</strong>, with <strong>' + notifValue.party_owner + 
-            '</strong>, begins in 10 minutes!'
-          } else if (notifValue.action == 'fan_win'){
-            notif_text = "You're going to <strong>" + notifValue.party_title + '</strong> with <strong>' + 
-            notifValue.party_owner + '</strong> on <strong>' + notifValue.party_time + '</strong>'
-          } else if (notifValue.action == 'fan_outbid'){
-            notif_text = 'Your bid on <strong>' + notifValue.party_title + '</strong> with <strong>' + 
-            notifValue.party_owner + '</strong> is no longer high enough to win.'
-          }
-          // if there isnt a party anymore, dont delete the notification, just say its gone
-          // also get rid of the link to it
-          if (notifValue.party_title == null) {
-            notif_text = "This event has been deleted."
-            link_url = ''
-          }
-          // the card alows you to click to move to the event it displays
-          let container = 
-          '<a class="text-dark" ' + link_url +  
-          '" style="text-decoration: none;">' +
-            '<div class="card mb-2 ' + card_highlight + '" id="notif-display" seen-id=' 
-            + seen + ' data-id="' + notifValue.id + '">' +
-              '<div class="card-body">' +
-                notif_text +
-              '</div>' +
-            '</div>' + 
-          '</a>' 
+      //     // NOTIFICATION TEXT
+      //     let notif_text = ''
+      //     let link_url = 'href="/events/' + notifValue.party  
+      //     // this sets the text for the 5 notification types
+      //     if (notifValue.action == 'owner_event_close'){
+      //       notif_text = 'Your event, <strong>' + notifValue.party_title + '</strong>, has closed.'
+      //     } else if (notifValue.action == 'owner_reminder'){
+      //       notif_text = 'Your event, <strong>' + notifValue.party_title + '</strong>, starts in 10 minutes!'
+      //     } else if (notifValue.action == 'fan_reminder'){
+      //       notif_text = '<strong>' + notifValue.party_title + '</strong>, with <strong>' + notifValue.party_owner + 
+      //       '</strong>, begins in 10 minutes!'
+      //     } else if (notifValue.action == 'fan_win'){
+      //       notif_text = "You're going to <strong>" + notifValue.party_title + '</strong> with <strong>' + 
+      //       notifValue.party_owner + '</strong> on <strong>' + notifValue.party_time + '</strong>'
+      //     } else if (notifValue.action == 'fan_outbid'){
+      //       notif_text = 'Your bid on <strong>' + notifValue.party_title + '</strong> with <strong>' + 
+      //       notifValue.party_owner + '</strong> is no longer high enough to win.'
+      //     }
+      //     // if there isnt a party anymore, dont delete the notification, just say its gone
+      //     // also get rid of the link to it
+      //     if (notifValue.party_title == null) {
+      //       notif_text = "This event has been deleted."
+      //       link_url = ''
+      //     }
+      //     // the card alows you to click to move to the event it displays
+      //     let container = 
+      //     '<a class="text-dark" ' + link_url +  
+      //     '" style="text-decoration: none;">' +
+      //       '<div class="card mb-2 ' + card_highlight + '" id="notif-display" seen-id=' 
+      //       + seen + ' data-id="' + notifValue.id + '">' +
+      //         '<div class="card-body">' +
+      //           notif_text +
+      //         '</div>' +
+      //       '</div>' + 
+      //     '</a>' 
           
-          // just return it immediately
-          return container
-        }
+      //     // just return it immediately
+      //     return container
+      //   }
 
-        // this adds the html to the div we want it in. 
-        function parseNotifications(){
-          // fetch fills the notificationsList
-          if (notifList == 0) {
-            notifContainer.text('No notifications :(')
-          } else {
-            for (let notifIndex = 0; notifIndex < notifList.length; notifIndex++) {
-              let notifValue = notifList[notifIndex]
-              let notifFormattedHtml = formatNotification(notifValue)
-              notifContainer.append(notifFormattedHtml)
-            }
-          }
-        }
+      //   // this adds the html to the div we want it in. 
+      //   function parseNotifications(){
+      //     // fetch fills the notificationsList
+      //     if (notifList == 0) {
+      //       notifContainer.text('No notifications :(')
+      //     } else {
+      //       for (let notifIndex = 0; notifIndex < notifList.length; notifIndex++) {
+      //         let notifValue = notifList[notifIndex]
+      //         let notifFormattedHtml = formatNotification(notifValue)
+      //         notifContainer.append(notifFormattedHtml)
+      //       }
+      //     }
+      //   }
 
-        // this calls to the API and gets the party data for the thumbnails
-        // the url input is for the loadmore
-        function fetchNotifications(url){
-          let fetchUrl;
-          // if there isnt a url passed, its the first api page
-          if (!url) {
-            fetchUrl = initialUrl
-          } else {
-            fetchUrl = url
-          }
-          $.ajax({
-            url: fetchUrl, 
-            method: 'GET', 
-            success: function(data){
-              // the .results is required because of our pagination
-              // it sets a new datagrouping outside of the data we're using
-              // to describe what the call retrieved
-              notifList = data.results
-              // if there are more pages in the API, the loadmore appears
-              if (data.next) {
-                nextNotifUrl = data.next
-              } else {
-                $('#loadmore').css('display', 'none')
-              }
-              // it then calls the parse to format them and updates the usernames and 
-              // and hashtags
-              parseNotifications()
-            }, 
-            error: function(data){
-              console.log('error')
-              console.log(data)
-            }
-          })
-        }
+      //   // this calls to the API and gets the party data for the thumbnails
+      //   // the url input is for the loadmore
+      //   function fetchNotifications(url){
+      //     let fetchUrl;
+      //     // if there isnt a url passed, its the first api page
+      //     if (!url) {
+      //       fetchUrl = initialUrl
+      //     } else {
+      //       fetchUrl = url
+      //     }
+      //     $.ajax({
+      //       url: fetchUrl, 
+      //       method: 'GET', 
+      //       success: function(data){
+      //         // the .results is required because of our pagination
+      //         // it sets a new datagrouping outside of the data we're using
+      //         // to describe what the call retrieved
+      //         notifList = data.results
+      //         // if there are more pages in the API, the loadmore appears
+      //         if (data.next) {
+      //           nextNotifUrl = data.next
+      //         } else {
+      //           $('#loadmore').css('display', 'none')
+      //         }
+      //         // it then calls the parse to format them and updates the usernames and 
+      //         // and hashtags
+      //         parseNotifications()
+      //       }, 
+      //       error: function(data){
+      //         console.log('error')
+      //         console.log(data)
+      //       }
+      //     })
+      //   }
 
-        // this calls the fetch methods and starts the chain above
-        fetchNotifications()
+      //   // this calls the fetch methods and starts the chain above
+      //   fetchNotifications()
         
 
-        // this handles our loadmore button
-        // it binds a function to any click on something with a loadmore ID
-        $('#loadmore').click(function(event){
-          event.preventDefault()
+      //   // this handles our loadmore button
+      //   // it binds a function to any click on something with a loadmore ID
+      //   $('#loadmore').click(function(event){
+      //     event.preventDefault()
 
-          // assuming there are more events, get and show them
-          if (nextNotifUrl) {
-            fetchNotifications(nextNotifUrl)
-          }
-        })
-      }
+      //     // assuming there are more events, get and show them
+      //     if (nextNotifUrl) {
+      //       fetchNotifications(nextNotifUrl)
+      //     }
+      //   })
+      // }
 
-      // this is the main event rendering function. it takes the container ID
-      // so that it knows where to put the events. the second parameter is used to 
-      // tell us if we're rendering a single event
-      function loadPartyContainer(partyContainerID, fetchOneId) {
-        // these variables are used repeatedly by different methods 
-        // this grabs the search terms from the search bar
-        let query = getParameterByName('q');
-        // this is the set of events in the api
-        let partyList = [];
-        // this links to the following page in the api
-        let nextPartyUrl;
+      // // this is the main event rendering function. it takes the container ID
+      // // so that it knows where to put the events. the second parameter is used to 
+      // // tell us if we're rendering a single event
+      // function loadPartyContainer(partyContainerID, fetchOneId) {
+      //   // these variables are used repeatedly by different methods 
+      //   // this grabs the search terms from the search bar
+      //   let query = getParameterByName('q');
+      //   // this is the set of events in the api
+      //   let partyList = [];
+      //   // this links to the following page in the api
+      //   let nextPartyUrl;
 
-        // this is the selector for where we're putting the party info
-        let partyContainer;
-        if (partyContainerID){
-          partyContainer = $('#' + partyContainerID)
-        } else {
-          partyContainer = $('#party-container')
-        }
+      //   // this is the selector for where we're putting the party info
+      //   let partyContainer;
+      //   if (partyContainerID){
+      //     partyContainer = $('#' + partyContainerID)
+      //   } else {
+      //     partyContainer = $('#party-container')
+      //   }
 
-        // url that allows us to get the api data. second is the default
-        // data url should be defined in the container specified in the HTML
-        let initialUrl = partyContainer.attr('data-url') || '/api/events/';
+      //   // url that allows us to get the api data. second is the default
+      //   // data url should be defined in the container specified in the HTML
+      //   let initialUrl = partyContainer.attr('data-url') || '/api/events/';
 
-        // this needs to be built into a responsive variable so that we can 
-        // always have the correct number of events on each line
-        let handSize;
+      //   // this needs to be built into a responsive variable so that we can 
+      //   // always have the correct number of events on each line
+      //   let handSize;
 
-        // these are repeatedly used, so they've been converted to variables
-        // some should eventually be references to a dictionary
-        let bid_amount=100;
-        let click = 'click';
-        let star_active = '<i class="fa fa-star yellow-color" aria-hidden="true"></i>';
-        let star_inactive = '<i class="fa fa-star grey-color" aria-hidden="true"></i>';
-        let free = 'FREE';
-        let joined = '';
-        let joined_lottery = 'Entry Purchased';
-        let joined_bid = 'Bid submitted';
-        let joined_buy = 'Event Purchased';
-        let lottery_icon = '<i class="fas fa-ticket-alt grey-color" data-toggle="tooltip" data-placement="top" title="Lottery"></i>';
-        let bid_icon = '<i class="fas fa-gavel grey-color" data-toggle="tooltip" data-placement="top" title="Auction"></i>';
-        let buy_icon = '<i class="fa fa-donate grey-color" data-toggle="tooltip" data-placement="top" title="Buy Now"></i>';
-        let closed_icon = '<i class="fas fa-ban grey-color"></i>';
-
-
-        // this is the favorite function. It wil be instrumental in enabling 
-        // users to track events as they progress.
-        // its built to trigger on click for any button with the correct class
-        $(document.body).on(click, '.starBtn', function(e){
-          e.preventDefault()
-          let this_ = $(this)
-          // selector for the button. makes sure we're starring the correct button
-          let partyID = this_.attr('data-id')
-
-          // api endpoint
-          let starredUrl = '/api/events/' + partyID + '/star/'
-          // ajax is what actually accesses the API
-          $.ajax({
-            method: 'GET',
-            url: starredUrl,
-            success: function(data){
-              // the api handles updating the database and the method below
-              // updates the color, so nothing happens on success
-            }, 
-            error: function(data){
-              console.log('error')
-              console.log(data)
-            }
-          })
-        })
+      //   // these are repeatedly used, so they've been converted to variables
+      //   // some should eventually be references to a dictionary
+      //   let bid_amount=100;
+      //   let click = 'click';
+      //   let star_active = '<i class="fa fa-star yellow-color" aria-hidden="true"></i>';
+      //   let star_inactive = '<i class="fa fa-star grey-color" aria-hidden="true"></i>';
+      //   let free = 'FREE';
+      //   let joined = '';
+      //   let joined_lottery = 'Entry Purchased';
+      //   let joined_bid = 'Bid submitted';
+      //   let joined_buy = 'Event Purchased';
+      //   let lottery_icon = '<i class="fas fa-ticket-alt grey-color" data-toggle="tooltip" data-placement="top" title="Lottery"></i>';
+      //   let bid_icon = '<i class="fas fa-gavel grey-color" data-toggle="tooltip" data-placement="top" title="Auction"></i>';
+      //   let buy_icon = '<i class="fa fa-donate grey-color" data-toggle="tooltip" data-placement="top" title="Buy Now"></i>';
+      //   let closed_icon = '<i class="fas fa-ban grey-color"></i>';
 
 
-        // this controls the display color of the favorite button
-        // its linked to a different class to ensure nothing wierd happens 
-        // with the click trigger
-        $(document.body).on(click, '.fa-star', function(e){
-          e.preventDefault()
-          let this_ = $(this)
-          // one of these classes is activated by the formatting below, 
-          // so the two toggles are never on at the same time
-          this_.toggleClass('grey-color')
-          this_.toggleClass('yellow-color')
-        })
+        // // this is the favorite function. It wil be instrumental in enabling 
+        // // users to track events as they progress.
+        // // its built to trigger on click for any button with the correct class
+        // $(document.body).on(click, '.starBtn', function(e){
+        //   e.preventDefault()
+        //   let this_ = $(this)
+        //   // selector for the button. makes sure we're starring the correct button
+        //   let partyID = this_.attr('data-id')
+
+        //   // api endpoint
+        //   let starredUrl = '/api/events/' + partyID + '/star/'
+        //   // ajax is what actually accesses the API
+        //   $.ajax({
+        //     method: 'GET',
+        //     url: starredUrl,
+        //     success: function(data){
+        //       // the api handles updating the database and the method below
+        //       // updates the color, so nothing happens on success
+        //     }, 
+        //     error: function(data){
+        //       console.log('error')
+        //       console.log(data)
+        //     }
+        //   })
+        // })
+
+
+        // // this controls the display color of the favorite button
+        // // its linked to a different class to ensure nothing wierd happens 
+        // // with the click trigger
+        // $(document.body).on(click, '.fa-star', function(e){
+        //   e.preventDefault()
+        //   let this_ = $(this)
+        //   // one of these classes is activated by the formatting below, 
+        //   // so the two toggles are never on at the same time
+        //   this_.toggleClass('grey-color')
+        //   this_.toggleClass('yellow-color')
+        // })
 
 
         // this is the join function. it works just like the star function
-        $(document.body).on(click, '.joinBtn', function(e){
-          e.preventDefault()
+        // $(document.body).on(click, '.joinBtn', function(e){
+        //   e.preventDefault()
 
-          let this_ = $(this)
-          // selector for the button. makes sure we have the event id 
-          let partyID = this_.attr('data-id')
-          let partyType = this_.attr('event-id')
-          console.log("The party is "+partyType)
-          // api endpoint
-          let joinedUrl;
-          if(partyType == 1 || partyType == 3){
-            joinedUrl = '/api/events/' + partyID + '/join/'
-          }
-          else{
-            let bid = document.getElementsByName("bid_amount")[0].value
-            joinedUrl = '/api/events/' + partyID + '/join/'+ bid
-          }
+        //   let this_ = $(this)
+        //   // selector for the button. makes sure we have the event id 
+        //   let partyID = this_.attr('data-id')
+        //   let partyType = this_.attr('event-id')
+        //   console.log("The party is "+partyType)
+        //   // api endpoint
+        //   let joinedUrl;
+        //   if(partyType == 1 || partyType == 3){
+        //     joinedUrl = '/api/events/' + partyID + '/join/'
+        //   }
+        //   else{
+        //     let bid = document.getElementsByName("bid_amount")[0].value
+        //     joinedUrl = '/api/events/' + partyID + '/join/'+ bid
+        //   }
           
-          // ajax accesses the api
-          $.ajax({
-            method: 'GET',
-            url: joinedUrl,
+        //   // ajax accesses the api
+        //   $.ajax({
+        //     method: 'GET',
+        //     url: joinedUrl,
 
-            success: function(data){
-              if(partyType == 1){
-                document.getElementsByName("num_joined")[0].innerHTML = data.num_joined + ' <small class="text-muted">Joined</small>'
-              }
-              if(partyType == 2){
-                document.getElementsByName("min_bid")[0].innerHTML = bid_icon + ' $' + data.min_bid + ' <small class="text-muted">bid to beat</small>'
-              }
-              if(partyType == 3){
-                document.getElementsByName("num_curr_winners")[0].innerHTML = 
-                data.num_curr_winners + ' <small class="text-muted">Spots taken</small>'
-              }
-              if(data.error_message!=""){
-                alert(data.error_message)
-              }
-              if(data.error_message == ''){
-                this_.prop('disabled', true)
-                this_.text(joined)
-              }
-              console.log(this_)
-              console.log(data.min_bid)
-              // the api handles updating the database 
-            }, 
-            error: function(data){
-              console.log('error')
-              console.log(data)
-            }
-          })
-        })
+        //     success: function(data){
+        //       if(partyType == 1){
+        //         document.getElementsByName("num_joined")[0].innerHTML = data.num_joined + ' <small class="text-muted">Joined</small>'
+        //       }
+        //       if(partyType == 2){
+        //         document.getElementsByName("min_bid")[0].innerHTML = bid_icon + ' $' + data.min_bid + ' <small class="text-muted">bid to beat</small>'
+        //       }
+        //       if(partyType == 3){
+        //         document.getElementsByName("num_curr_winners")[0].innerHTML = 
+        //         data.num_curr_winners + ' <small class="text-muted">Spots taken</small>'
+        //       }
+        //       if(data.error_message!=""){
+        //         alert(data.error_message)
+        //       }
+        //       if(data.error_message == ''){
+        //         this_.prop('disabled', true)
+        //         this_.text(joined)
+        //       }
+        //       console.log(this_)
+        //       console.log(data.min_bid)
+        //       // the api handles updating the database 
+        //     }, 
+        //     error: function(data){
+        //       console.log('error')
+        //       console.log(data)
+        //     }
+        //   })
+        // })
 
 
         // this controls the display of the join button
@@ -468,261 +469,261 @@ of the formatting in the head, so it must be imported into every file. -->
 
         // this allows search along hashtags. its called upon creation
         // could be useful for categorization
-        function updateHashLinks(){
-          // this is where the actual title and description are held
-          // the span allows up to properly id the hashtags in the description
-          // it will not highlight anf link a hashtag in the title
-          $('.description').each(function(data){
-            let hashtagRegex = /(^|\s)#([\w\d-]+)/g // pulls hashtags
-            let usernameRegex = /(^|\s)@([\w\d-]+)/g // pulls user mentions
-            let currentHtml = $(this).html()
-            let newText;
-            // the regex returns stuff before and after
-            // the replace puts the tag in and then makes a link for the text
-            newText = currentHtml.replace(hashtagRegex, '$1<a class="text-dark" href="/tags/$2/">#$2</a>')
-            newText = newText.replace(usernameRegex, '$1<a class="text-dark" href="/profiles/$2/">@$2</a>')
-            $(this).html(newText)
-          })
-        }
+        // function updateHashLinks(){
+        //   // this is where the actual title and description are held
+        //   // the span allows up to properly id the hashtags in the description
+        //   // it will not highlight anf link a hashtag in the title
+        //   $('.description').each(function(data){
+        //     let hashtagRegex = /(^|\s)#([\w\d-]+)/g // pulls hashtags
+        //     let usernameRegex = /(^|\s)@([\w\d-]+)/g // pulls user mentions
+        //     let currentHtml = $(this).html()
+        //     let newText;
+        //     // the regex returns stuff before and after
+        //     // the replace puts the tag in and then makes a link for the text
+        //     newText = currentHtml.replace(hashtagRegex, '$1<a class="text-dark" href="/tags/$2/">#$2</a>')
+        //     newText = newText.replace(usernameRegex, '$1<a class="text-dark" href="/profiles/$2/">@$2</a>')
+        //     $(this).html(newText)
+        //   })
+        // }
 
         // this is the formatting for thumbnails
-        function formatParty(partyValue){
-          // this sets the star color depending on whether or not 
-          // its been starred by the request user
-          let verb = star_inactive
-          if (partyValue.did_star){
-            verb = star_active
-          }
+        // function formatParty(partyValue){
+        //   // this sets the star color depending on whether or not 
+        //   // its been starred by the request user
+        //   let verb = star_inactive
+        //   if (partyValue.did_star){
+        //     verb = star_active
+        //   }
 
-          // this sets the text version of the price
-          let price = '$' + partyValue.cost
-          if (partyValue.cost == 0) {
-            price = free
-          }
-          if (partyValue.event_type == 2){
-            price = '$' + partyValue.minimum_bid
-          }
+        //   // this sets the text version of the price
+        //   let price = '$' + partyValue.cost
+        //   if (partyValue.cost == 0) {
+        //     price = free
+        //   }
+        //   if (partyValue.event_type == 2){
+        //     price = '$' + partyValue.minimum_bid
+        //   }
 
-          // this checks the event type and sets the correct icon
-          let type_icon = ''
-          if (partyValue.event_type == 1) {
-            type_icon = lottery_icon
-          } else if (partyValue.event_type == 2) {
-            type_icon = bid_icon
-          } else if (partyValue.event_type == 3) {
-            type_icon = buy_icon
-          }
+        //   // this checks the event type and sets the correct icon
+        //   let type_icon = ''
+        //   if (partyValue.event_type == 1) {
+        //     type_icon = lottery_icon
+        //   } else if (partyValue.event_type == 2) {
+        //     type_icon = bid_icon
+        //   } else if (partyValue.event_type == 3) {
+        //     type_icon = buy_icon
+        //   }
 
-          // adds small closed icon if event is closed. the tooltip explains the icon
-          let closed_display = ''
-          if (!partyValue.is_open) {
-            closed_display = '<span class="float-right" data-toggle="tooltip" data-placement="top" title="Event Closed">' + closed_icon + '</span>'
-          }
+        //   // adds small closed icon if event is closed. the tooltip explains the icon
+        //   let closed_display = ''
+        //   if (!partyValue.is_open) {
+        //     closed_display = '<span class="float-right" data-toggle="tooltip" data-placement="top" title="Event Closed">' + closed_icon + '</span>'
+        //   }
 
-          // this is the thumbnail formatting. its built on the
-          // card model from bootstrap. it has a top image, a body section 
-          // for the title and description, and a footer for name, time, 
-          // event type, and star
-          let container =  
-          '<div class="card" style="max-width: 16rem;">' + 
-            '<a class="text-dark" href="/events/' + partyValue.id + '" style="text-decoration: none;">' +
-              '<img class="card-img-top" src="' + partyValue.thumbnail_url + '" alt="not here">' + 
-            '</a>' +
-            '<div class="card-body">' + 
-              '<a class="text-dark" href="/events/' + partyValue.id + '" style="text-decoration: none;">' +
-                '<h5 class="card-title">' + partyValue.short_title + closed_display + '</h5>' + 
-                '<p class="card-text"><span class="description">' + partyValue.short_description + '</span></p>' + 
-              '</a>' +
-            '</div>' + 
-            '<div class="card-footer">' + 
-              '<small class="text-muted">With ' + 
-                '<a class="text-dark" href="' + partyValue.user.url + '">'+ partyValue.user.username + '</a>' + 
-                '<span class="float-right">' + price + ' ' + type_icon + '</span>' +
-                '<br>' + partyValue.party_time_display + 
-              '</small>' + 
-              '<span class="float-right">' + 
-                '<a href="#" class="starBtn text-dark" data-id="' + partyValue.id + '">' + verb + '</a>' + 
-              '</span>' + 
-            '</div>' + 
-          '</div>'
-          // just return it immediately
-          return container
-        }
+        //   // this is the thumbnail formatting. its built on the
+        //   // card model from bootstrap. it has a top image, a body section 
+        //   // for the title and description, and a footer for name, time, 
+        //   // event type, and star
+        //   let container =  
+        //   '<div class="card" style="max-width: 16rem;">' + 
+        //     '<a class="text-dark" href="/events/' + partyValue.id + '" style="text-decoration: none;">' +
+        //       '<img class="card-img-top" src="' + partyValue.thumbnail_url + '" alt="not here">' + 
+        //     '</a>' +
+        //     '<div class="card-body">' + 
+        //       '<a class="text-dark" href="/events/' + partyValue.id + '" style="text-decoration: none;">' +
+        //         '<h5 class="card-title">' + partyValue.short_title + closed_display + '</h5>' + 
+        //         '<p class="card-text"><span class="description">' + partyValue.short_description + '</span></p>' + 
+        //       '</a>' +
+        //     '</div>' + 
+        //     '<div class="card-footer">' + 
+        //       '<small class="text-muted">With ' + 
+        //         '<a class="text-dark" href="' + partyValue.user.url + '">'+ partyValue.user.username + '</a>' + 
+        //         '<span class="float-right">' + price + ' ' + type_icon + '</span>' +
+        //         '<br>' + partyValue.party_time_display + 
+        //       '</small>' + 
+        //       '<span class="float-right">' + 
+        //         '<a href="#" class="starBtn text-dark" data-id="' + partyValue.id + '">' + verb + '</a>' + 
+        //       '</span>' + 
+        //     '</div>' + 
+        //   '</div>'
+        //   // just return it immediately
+        //   return container
+        // }
 
         // this is the event detail formatting
-        function formatSingle(partyValue){
-          // sets the star color
-          let star_verb = star_inactive
-          if (partyValue.did_star){
-            star_verb = star_active
-          }
-          // this contains the pieces that every event has at the top. title, name, time, star, desc, etc.
-          let detail_header = '<div class="row mt-3">' +
-            '<div class="col-sm-4">' +  
-              '<img class="img-fluid rounded mx-auto" src="' + partyValue.thumbnail_url + '" alt="not here">' + 
-            '</div>' +
-            '<div class="col-sm-8">' +
-              '<h1 style="word-wrap: break-word;">' + partyValue.title + 
-                '<span class="float-right">' + 
-                  '<a href="#" class="starBtn text-dark" data-id="' + partyValue.id + '">' + star_verb + '</a>' + 
-                '</span>' + 
-              '</h1>' +
-              '<small class="text-muted">With ' + 
-                '<a class="text-dark" href="' + partyValue.user.url + '">'+ partyValue.user.username + '</a> On ' + partyValue.party_time_display + 
-              '</small><br>' + 
-              '<p class="lead mt-4" style="word-wrap: break-word;">' + partyValue.description + '</p>' + 
-            '</div>' +
-          '</div>'
+        // function formatSingle(partyValue){
+        //   // sets the star color
+        //   let star_verb = star_inactive
+        //   if (partyValue.did_star){
+        //     star_verb = star_active
+        //   }
+        //   // this contains the pieces that every event has at the top. title, name, time, star, desc, etc.
+        //   let detail_header = '<div class="row mt-3">' +
+        //     '<div class="col-sm-4">' +  
+        //       '<img class="img-fluid rounded mx-auto" src="' + partyValue.thumbnail_url + '" alt="not here">' + 
+        //     '</div>' +
+        //     '<div class="col-sm-8">' +
+        //       '<h1 style="word-wrap: break-word;">' + partyValue.title + 
+        //         '<span class="float-right">' + 
+        //           '<a href="#" class="starBtn text-dark" data-id="' + partyValue.id + '">' + star_verb + '</a>' + 
+        //         '</span>' + 
+        //       '</h1>' +
+        //       '<small class="text-muted">With ' + 
+        //         '<a class="text-dark" href="' + partyValue.user.url + '">'+ partyValue.user.username + '</a> On ' + partyValue.party_time_display + 
+        //       '</small><br>' + 
+        //       '<p class="lead mt-4" style="word-wrap: break-word;">' + partyValue.description + '</p>' + 
+        //     '</div>' +
+        //   '</div>'
 
-          // selects event type icon 
-          let type_icon = ''
-          let join = ''
-          if (partyValue.event_type == 1) {
-            type_icon = lottery_icon
-            join = "Enter Lottery"
-            joined = joined_lottery
-          } else if (partyValue.event_type == 2) {
-            type_icon = bid_icon
-            join = "Submit a Bid"
-            joined = joined_bid
-          } else if (partyValue.event_type == 3) {
-            type_icon = buy_icon
-            join = "Buy Event"
-            joined = joined_buy
-          }
+        //   // selects event type icon 
+        //   let type_icon = ''
+        //   let join = ''
+        //   if (partyValue.event_type == 1) {
+        //     type_icon = lottery_icon
+        //     join = "Enter Lottery"
+        //     joined = joined_lottery
+        //   } else if (partyValue.event_type == 2) {
+        //     type_icon = bid_icon
+        //     join = "Submit a Bid"
+        //     joined = joined_bid
+        //   } else if (partyValue.event_type == 3) {
+        //     type_icon = buy_icon
+        //     join = "Buy Event"
+        //     joined = joined_buy
+        //   }
 
-          // this sets the price text
-          let price = '<p class="text-muted">' + type_icon + ' $' + partyValue.cost + '</p>' 
-          if (partyValue.cost == 0) {
-            price = '<p class="text-muted">' + type_icon + ' ' + free + '</p>' 
-          } if (partyValue.event_type == 2) {
-            price = '<p class="text-muted" name="min_bid">' + type_icon + ' $' + partyValue.minimum_bid + 
-            ' <small class="text-muted"> bid to beat</small></p>'
-          }
-          // only displays the time until close if the event is still open
-          let timeuntil = ''
-          if (partyValue.is_open) {
-            timeuntil = '<p class="text-muted">' + partyValue.timeuntil + 
-            ' <small class="text-muted"> until close</small></p>'
-          }
-          // if there is no max entrants, it doesnt display
-          let max_entrants = '<p class="text-muted">' + partyValue.max_entrants + 
-            ' <small class="text-muted">Max entrants</small></p>'
-          if (partyValue.max_entrants == null) {
-            max_entrants = '<p class="text-muted">Unlimited<small class="text-muted"> entrants</small></p>'
-          }
-          // changes the winners display on buy event
-          let possible_winners = '<p class="text-muted">' + partyValue.num_possible_winners + 
-          ' <small class="text-muted">Winners possible</small></p>'
-          if (partyValue.event_type == 3) {
-            possible_winners = '<p class="text-muted">' + partyValue.num_possible_winners + 
-            ' <small class="text-muted">Spots total</small></p>'
-          }
-          // this sets the bid input so that owners dont see it
-          let bid_input = ''
-          if (!partyValue.is_owner) {
-            bid_input = '<form id= "bid-submit" method="GET">'+
-            '<div class="col-sm-12" id="div_bid_amount">'+
-            '<input type="number" step="0.01" id="bid_amount" name="bid_amount" ' + '{{ request.GET.bid_amount }}' + '">'+
-            '</div>'+
-            '</form>'+
-            '<div class="col-sm-20">'+
-            '<input type="hidden" name="party_id" value="' + partyValue.id + '">'+
-            '</div>'
-          }
-          // this sets the display of the join button
-          let join_verb = ''
-          if (!partyValue.is_owner){
-              join_verb = '<button type="button" class="btn btn-outline-secondary btn-block m-3 joinBtn joinDisplay" data-id="' 
-              + partyValue.id + '" event-id="'+partyValue.event_type+'">' + join + '</button>'
-            if (partyValue.did_join) {
-              join_verb = '<button type="button" class="btn btn-outline-secondary btn-block m-3 joinBtn joinDisplay disabled" data-id="' 
-              + partyValue.id + '" disabled>' + joined + '</button>'
-            }
-          } 
+        //   // this sets the price text
+        //   let price = '<p class="text-muted">' + type_icon + ' $' + partyValue.cost + '</p>' 
+        //   if (partyValue.cost == 0) {
+        //     price = '<p class="text-muted">' + type_icon + ' ' + free + '</p>' 
+        //   } if (partyValue.event_type == 2) {
+        //     price = '<p class="text-muted" name="min_bid">' + type_icon + ' $' + partyValue.minimum_bid + 
+        //     ' <small class="text-muted"> bid to beat</small></p>'
+        //   }
+        //   // only displays the time until close if the event is still open
+        //   let timeuntil = ''
+        //   if (partyValue.is_open) {
+        //     timeuntil = '<p class="text-muted">' + partyValue.timeuntil + 
+        //     ' <small class="text-muted"> until close</small></p>'
+        //   }
+        //  // if there is no max entrants, it doesnt display
+        //   let max_entrants = '<p class="text-muted">' + partyValue.max_entrants + 
+        //     ' <small class="text-muted">Max entrants</small></p>'
+        //   if (partyValue.max_entrants == null) {
+        //     max_entrants = '<p class="text-muted">Unlimited<small class="text-muted"> entrants</small></p>'
+        //   }
+        //   // changes the winners display on buy event
+        //   let possible_winners = '<p class="text-muted">' + partyValue.num_possible_winners + 
+        //   ' <small class="text-muted">Winners possible</small></p>'
+        //   if (partyValue.event_type == 3) {
+        //     possible_winners = '<p class="text-muted">' + partyValue.num_possible_winners + 
+        //     ' <small class="text-muted">Spots total</small></p>'
+        //   }
+        //   // this sets the bid input so that owners dont see it
+        //   let bid_input = ''
+        //   if (!partyValue.is_owner) {
+        //     bid_input = '<form id= "bid-submit" method="GET">'+
+        //     '<div class="col-sm-12" id="div_bid_amount">'+
+        //     '<input type="number" step="0.01" id="bid_amount" name="bid_amount" ' + '{{ request.GET.bid_amount }}' + '">'+
+        //     '</div>'+
+        //     '</form>'+
+        //     '<div class="col-sm-20">'+
+        //     '<input type="hidden" name="party_id" value="' + partyValue.id + '">'+
+        //     '</div>'
+        //   }
+        //   // this sets the display of the join button
+        //   let join_verb = ''
+        //   if (!partyValue.is_owner){
+        //       join_verb = '<button type="button" class="btn btn-outline-secondary btn-block m-3 joinBtn joinDisplay" data-id="' 
+        //       + partyValue.id + '" event-id="'+partyValue.event_type+'">' + join + '</button>'
+        //     if (partyValue.did_join) {
+        //       join_verb = '<button type="button" class="btn btn-outline-secondary btn-block m-3 joinBtn joinDisplay disabled" data-id="' 
+        //       + partyValue.id + '" disabled>' + joined + '</button>'
+        //     }
+        //   } 
 
-          // replaces the join button with a closed message if the event is over
-          if (!partyValue.is_open) {
-            join_verb = '<p class="mx-auto lead text-center text-muted">This Event Has Ended</p>'
-          }
+        //   // replaces the join button with a closed message if the event is over
+        //   if (!partyValue.is_open) {
+        //     join_verb = '<p class="mx-auto lead text-center text-muted">This Event Has Ended</p>'
+        //   }
 
-          // this displays the winners if they've been selected
-          let winner = ''
-          if (partyValue.winner_names.length > 0) {
-            winner = '<div class="row mt-3"><h1 class="mx-auto"> ' + partyValue.winner_names + 
-            ' is the winner!</h1></div>'
-          }
+        //   // this displays the winners if they've been selected
+        //   let winner = ''
+        //   if (partyValue.winner_names.length > 0) {
+        //     winner = '<div class="row mt-3"><h1 class="mx-auto"> ' + partyValue.winner_names + 
+        //     ' is the winner!</h1></div>'
+        //   }
          
 
-          // this formats the event on the detail page. it has a thumbnail on the top 
-          // left, the title and star on the top right, the name, time, and full 
-          // description, below. below that is the price, type, and the join button
-          if(partyValue.event_type == 1){
-             let container = detail_header +
-          '<div class="row mt-3">' + 
-            '<div class="col-sm-12">' + 
-              price + 
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              timeuntil +
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              '<p class="text-muted" name="num_joined">' + partyValue.joins + ' <small class="text-muted">Joined</small></p>' +
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              max_entrants + 
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              possible_winners + 
-            '</div>' +
-          '</div>' +
-          '<div class="row">' + join_verb + '</div>' + winner 
+        //   // this formats the event on the detail page. it has a thumbnail on the top 
+        //   // left, the title and star on the top right, the name, time, and full 
+        //   // description, below. below that is the price, type, and the join button
+        //   if(partyValue.event_type == 1){
+        //      let container = detail_header +
+        //   '<div class="row mt-3">' + 
+        //     '<div class="col-sm-12">' + 
+        //       price + 
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       timeuntil +
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       '<p class="text-muted" name="num_joined">' + partyValue.joins + ' <small class="text-muted">Joined</small></p>' +
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       max_entrants + 
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       possible_winners + 
+        //     '</div>' +
+        //   '</div>' +
+        //   '<div class="row">' + join_verb + '</div>' + winner 
 
-          return container
-          }
+        //   return container
+        //   }
 
-          if(partyValue.event_type == 2){
-            let container = detail_header +
-          '<div class="row mt-3">' + 
-            '<div class="col-sm-12">' + 
-              price + 
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              timeuntil +
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              possible_winners + 
-            '</div>' +
-          '</div>' +
-          bid_input +
-          '<div class="row">' + join_verb + '</div>' + winner 
+        //   if(partyValue.event_type == 2){
+        //     let container = detail_header +
+        //   '<div class="row mt-3">' + 
+        //     '<div class="col-sm-12">' + 
+        //       price + 
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       timeuntil +
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       possible_winners + 
+        //     '</div>' +
+        //   '</div>' +
+        //   bid_input +
+        //   '<div class="row">' + join_verb + '</div>' + winner 
 
-          return container
-          }
+        //   return container
+        //   }
           
-          if(partyValue.event_type == 3){
-             let container = detail_header +
-          '<div class="row mt-3">' + 
-            '<div class="col-sm-12">' + 
-              price + 
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              timeuntil +
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              '<p class="text-muted" name="num_curr_winners">' + partyValue.num_curr_winners + 
-              ' <small class="text-muted">Spots taken</small></p>' +
-            '</div>' +
-            '<div class="col-sm-12">' + 
-              possible_winners + 
-            '</div>' +
-          '</div>' +
-          '<div class="row">' + join_verb + '</div>' + winner 
+        //   if(partyValue.event_type == 3){
+        //      let container = detail_header +
+        //   '<div class="row mt-3">' + 
+        //     '<div class="col-sm-12">' + 
+        //       price + 
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       timeuntil +
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       '<p class="text-muted" name="num_curr_winners">' + partyValue.num_curr_winners + 
+        //       ' <small class="text-muted">Spots taken</small></p>' +
+        //     '</div>' +
+        //     '<div class="col-sm-12">' + 
+        //       possible_winners + 
+        //     '</div>' +
+        //   '</div>' +
+        //   '<div class="row">' + join_verb + '</div>' + winner 
 
-          return container
-          }
+        //   return container
+        //   }
          
-        }
+        // }
 
 
         // reworked version of the parseParties call
@@ -730,126 +731,126 @@ of the formatting in the head, so it must be imported into every file. -->
         // number of cards. handSize sets the number of cards per deck. this 
         // allows the page to be more responsive and change the number of cards 
         // per deck given the width of the page. 
-        function parseParties(){
-          // partylist should be filled with parties from the fetch call
-          if (partyList == 0) {
-            partyContainer.text('No events :(')
-          } else {
-            // make global variable, make responsive
-            handSize = 3
-            // this iterates through the number of hands in the party list, 
-            // then through the number of cards per hand, then formats the 
-            // party and adds it to the HTML. each hand is its own div
-            for (let deck = 0; deck < partyList.length; deck += handSize) {
-              let deckHTML = '<div class="card-deck mb-4">'
-              for (let card = 0; card < handSize; card++) {
-                let cardIndex = deck + card
-                if (cardIndex < partyList.length) {
-                  let partyValue = partyList[cardIndex]
-                  let partyFormattedHtml = formatParty(partyValue)
-                  deckHTML = deckHTML + partyFormattedHtml
-                }
-              }
-              deckHTML = deckHTML + '</div>'
-              partyContainer.append(deckHTML)
-            }
-          }
-        }
+        // function parseParties(){
+        //   // partylist should be filled with parties from the fetch call
+        //   if (partyList == 0) {
+        //     partyContainer.text('No events :(')
+        //   } else {
+        //     // make global variable, make responsive
+        //     handSize = 3
+        //     // this iterates through the number of hands in the party list, 
+        //     // then through the number of cards per hand, then formats the 
+        //     // party and adds it to the HTML. each hand is its own div
+        //     for (let deck = 0; deck < partyList.length; deck += handSize) {
+        //       let deckHTML = '<div class="card-deck mb-4">'
+        //       for (let card = 0; card < handSize; card++) {
+        //         let cardIndex = deck + card
+        //         if (cardIndex < partyList.length) {
+        //           let partyValue = partyList[cardIndex]
+        //           let partyFormattedHtml = formatParty(partyValue)
+        //           deckHTML = deckHTML + partyFormattedHtml
+        //         }
+        //       }
+        //       deckHTML = deckHTML + '</div>'
+        //       partyContainer.append(deckHTML)
+        //     }
+        //   }
+        // }
 
 
         // The detail view version of parseparties. it just formats a single item
-        function parseSingle(){
-          let partyValue = partyList[0]
-          let partyFormattedHtml = formatSingle(partyValue)
-          partyContainer.append(partyFormattedHtml) 
-        }
+        // function parseSingle(){
+        //   let partyValue = partyList[0]
+        //   let partyFormattedHtml = formatSingle(partyValue)
+        //   partyContainer.append(partyFormattedHtml) 
+        // }
 
 
-        // this calls to the API and gets the party data for the thumbnails
-        function fetchParties(url){
-          let fetchUrl;
+        // // this calls to the API and gets the party data for the thumbnails
+        // function fetchParties(url){
+        //   let fetchUrl;
 
-          // if there isnt a url passed, its the first api page, 
-          // which is just events from following
-          if (!url) {
-            fetchUrl = initialUrl
-          } else {
-            fetchUrl = url
-          }
-          // actual call to api
-          $.ajax({
-            url: fetchUrl, 
-            data: {
-              'q': query
-            },
-            method: 'GET', 
-            success: function(data){
-              // the .results is required because of our pagination
-              // it sets a new datagrouping outside of the data we're using
-              // to describe what the call retrieved
-              partyList = data.results
+        //   // if there isnt a url passed, its the first api page, 
+        //   // which is just events from following
+        //   if (!url) {
+        //     fetchUrl = initialUrl
+        //   } else {
+        //     fetchUrl = url
+        //   }
+        //   // actual call to api
+        //   $.ajax({
+        //     url: fetchUrl, 
+        //     data: {
+        //       'q': query
+        //     },
+        //     method: 'GET', 
+        //     success: function(data){
+        //       // the .results is required because of our pagination
+        //       // it sets a new datagrouping outside of the data we're using
+        //       // to describe what the call retrieved
+        //       partyList = data.results
 
-              // if there are more pages in the API, the loadmore appears
-              if (data.next) {
-                nextPartyUrl = data.next
-              } else {
-                $('#loadmore').css('display', 'none')
-              }
-              // it then calls the parse to format them and updates the usernames and 
-              // and hashtags
-              parseParties()
-              updateHashLinks()
-            }, 
-            error: function(data){
-              console.log('error')
-              console.log(data)
-            }
-          })
-        }
+        //       // if there are more pages in the API, the loadmore appears
+        //       if (data.next) {
+        //         nextPartyUrl = data.next
+        //       } else {
+        //         $('#loadmore').css('display', 'none')
+        //       }
+        //       // it then calls the parse to format them and updates the usernames and 
+        //       // and hashtags
+        //       parseParties()
+        //       updateHashLinks()
+        //     }, 
+        //     error: function(data){
+        //       console.log('error')
+        //       console.log(data)
+        //     }
+        //   })
+        // }
 
-        // this accesses the event data for a single detail event
-        function fetchSingle(fetchOneId){
-          // leading slash appends it to the base url. 
-          // no leading slash sends it to the url of the page its on
-          // which would be /events/id/api/events/id 
-          let fetchDetailUrl = '/api/events/' + fetchOneId + '/'
-          // actual call to api
-          $.ajax({
-            url: fetchDetailUrl, 
-            method: 'GET', 
-            success: function(data){
-              console.log(data)
-              partyList = data.results
-              parseSingle()
-              updateHashLinks()
-            }, 
-            error: function(data){
-              console.log('error')
-              console.log(data)
-            }
-          })
-        }
+        // // this accesses the event data for a single detail event
+        // function fetchSingle(fetchOneId){
+        //   // leading slash appends it to the base url. 
+        //   // no leading slash sends it to the url of the page its on
+        //   // which would be /events/id/api/events/id 
+        //   let fetchDetailUrl = '/api/events/' + fetchOneId + '/'
+        //   // actual call to api
+        //   $.ajax({
+        //     url: fetchDetailUrl, 
+        //     method: 'GET', 
+        //     success: function(data){
+        //       console.log(data)
+        //       partyList = data.results
+        //       parseSingle()
+        //       updateHashLinks()
+        //     }, 
+        //     error: function(data){
+        //       console.log('error')
+        //       console.log(data)
+        //     }
+        //   })
+        // }
 
 
         // this calls the appropriate fetch method depending 
         // on whether or not its a detail page
-        if (fetchOneId){
-          fetchSingle(fetchOneId)
-        } else {
-          fetchParties()
-        }
+        // if (fetchOneId){
+        //   fetchSingle(fetchOneId)
+        // } else {
+        //   fetchParties()
+        // }
 
         // this handles our loadmore button
         // it binds a function to any click on something with a loadmore ID
-        $('#loadmore').click(function(event){
-          event.preventDefault()
+        // $('#loadmore').click(function(event){
+        //   event.preventDefault()
 
-          // assuming there are more events, get and show them
-          if (nextPartyUrl) {
-            fetchParties(nextPartyUrl)
-          }
-        })
-      }
+        //   // assuming there are more events, get and show them
+        //   if (nextPartyUrl) {
+        //     fetchParties(nextPartyUrl)
+        //   }
+        // })
+      // }
     </script>
 
 

@@ -23,3 +23,9 @@ parties/__pycache__/models.cpython-36.pyc
 parties/api/__pycache__/urls.cpython-36.pyc
 parties/api/__pycache__/views.cpython-36.pyc
 db.sqlite3
+accounts/migrations/__pycache__/0001_initial.cpython-36.pyc
+bids/__pycache__/models.cpython-36.pyc
+bids/migrations/__pycache__/0001_initial.cpython-36.pyc
+parties/__pycache__/models.cpython-36.pyc
+parties/api/__pycache__/views.cpython-36.pyc
+parties/migrations/__pycache__/0001_initial.cpython-36.pyc

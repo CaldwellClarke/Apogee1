@@ -2,6 +2,7 @@
 js for:
 userstatistics/templates/userstatistics.statistics_info_list.html
 */
+// I am here
 /*******************************GLOBAL VARIABLES*******************************/
 //starts general_btn, because on rendering of html we want the general tab to be
 //selected

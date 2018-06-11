@@ -1,6 +1,6 @@
 <!-- this is for the single event page -->
 {% extends 'base.html' %}
-
+<!-- {% load static %} -->
 <!-- tab title in browser -->
 {% block title %}
 	{{ object.title }} | {{ block.super }}
@@ -8,12 +8,14 @@
 
 <!-- contains our custom JS -->
 {% block script %}
+<script src='{% static "js/parties/party-rendering-detail.js"%}'></script>
 <script>
+
 	// runs when page DOM is ready
 	$(document).ready(function(){
 		// we pass a second id parameter so that our JS knows that
 		// we're working with a single event, rather than a list 
-		loadPartyContainer('party-container', {{ object.id }})
+		loadPartyDetailContainer('party-container', {{ object.id }});
 	});
 </script>
 {% endblock script %}

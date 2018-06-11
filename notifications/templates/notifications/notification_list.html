@@ -1,6 +1,6 @@
 <!--this is the HTML for the notifications page.-->
 {% extends 'base.html' %}
-
+<!-- {% load static %} -->
 <!-- sets the tab info -->
 {% block title %}
 	Notifications | {{ block.super }}
@@ -8,9 +8,11 @@
 
 <!-- contains our custom JS -->
 {% block script %}
+<script src='{% static "js/notifications/notification-rendering.js"%}'></script>
 <script>
 	// runs when page DOM is ready
 	$(document).ready(function(){
+		// tells us where the thumbnails go
 		loadNotificationContainer('notif-container')
 	});
 </script>

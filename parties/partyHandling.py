@@ -11,7 +11,7 @@ from django.urls import reverse
 
 import math
 import sys
-
+#I am changing stuff here
 from .models import Party
 from bids.models import Bid
 from userstatistics import statisticsfunctions

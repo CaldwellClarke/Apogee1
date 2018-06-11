@@ -1,7 +1,7 @@
 <!-- this is he HTML for the search page. not sure why it is here rather than 
 than in the parties templates -->
 {% extends 'base.html' %}
-
+<!-- {% load static %} -->
 <!-- sets the tab info -->
 {% block title %}
 	Events | {{ block.super }}
@@ -9,11 +9,12 @@ than in the parties templates -->
 
 <!-- contains our custom JS -->
 {% block script %}
+<script src='{% static "js/parties/party-rendering-detail.js"%}'></script>
 <script>
 	// runs when page DOM is ready
 	$(document).ready(function(){
-		// this tells us where our thumbnails go
-		loadPartyContainer('party-container')
+		// tells us where the thumbnails go
+		loadPartyListContainer('party-container')
 	});
 </script>
 {% endblock script %}

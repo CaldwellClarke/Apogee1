@@ -1,6 +1,7 @@
 <!-- this is the html for the "following" tab. it includes a list
 of usernames and a lidt of events -->
 {% extends 'base.html' %}
+<!-- {% load static %} -->
 
 <!-- sets the tab info -->
 {% block title %}
@@ -9,11 +10,12 @@ of usernames and a lidt of events -->
 
 <!-- contains our custom JS -->
 {% block script %}
+<script src='{% static "js/parties/party-rendering-detail.js"%}'></script>
 <script>
 	// runs when page DOM is ready
 	$(document).ready(function(){
-		// this is the container for rendering the thumbnails
-		loadPartyContainer('follow-container')
+		// tells us where the thumbnails go
+		loadPartyListContainer('follow-container')
 	});
 </script>
 {% endblock script %}

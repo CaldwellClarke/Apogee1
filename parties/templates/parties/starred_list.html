@@ -1,6 +1,6 @@
 <!-- starred list is the same format as joined. it only shows events -->
 {% extends 'base.html' %}
-
+<!-- {% load static %} -->
 <!-- sets the tab info -->
 {% block title %}
 	Starred | {{ block.super }}
@@ -8,10 +8,12 @@
 
 <!-- contains our custom JS -->
 {% block script %}
+<script src='{% static "js/parties/party-rendering-detail.js"%}'></script>
 <script>
 	// runs when page DOM is ready
 	$(document).ready(function(){
-		loadPartyContainer('starred-container')
+		// tells us where the thumbnails go
+		loadPartyListContainer('starred-container')
 	});
 </script>
 {% endblock script %}
