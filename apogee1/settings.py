@@ -126,7 +126,8 @@ WSGI_APPLICATION = 'apogee1.wsgi.application'
 # }
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL')
+        #default=config('DATABASE_URL')
+        default=postgres://qoicghmdafjtvd:1863a240310cf683041d78e6bc08551de4425ab0c18ad475889a748f3782737c@ec2-23-21-236-249.compute-1.amazonaws.com:5432/dh21blposbp5
     )
 }
 
