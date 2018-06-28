@@ -30,8 +30,8 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # shows debug messages in the page 
 #HEROKU 
-DEBUG = True
-#DEBUG = config('DEBUG', default=False, cast=bool)
+#DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['apogee-prod.herokuapp.com']
 
 
