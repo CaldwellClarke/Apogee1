@@ -1,0 +1,1 @@
+web: gunicorn apogee1.wsgi --log-file -
