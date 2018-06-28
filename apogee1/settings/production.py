@@ -31,7 +31,7 @@ SECRET_KEY = '6fw*ujba!d-3^a8ez_9*da+2@bt2(-1*4@f7bjuvxas$puux_8'
 #HEROKU 
 DEBUG = True
 #DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['apogee-prod.herokuapp.com']
 
 
 # Application definition
