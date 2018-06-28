@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from decouple import config
+import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # points us back to the root folder, where manage.py is
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,8 +126,11 @@ WSGI_APPLICATION = 'apogee1.wsgi.application'
 #     }
 # }
 DATABASES = {
-    'default': 'postgres://qoicghmdafjtvd:1863a240310cf683041d78e6bc08551de4425ab0c18ad475889a748f3782737c@ec2-23-21-236-249.compute-1.amazonaws.com:5432/dh21blposbp5'
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
