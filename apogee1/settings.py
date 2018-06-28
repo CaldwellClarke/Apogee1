@@ -82,9 +82,7 @@ LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
 # Address of RabbitMQ instance, our Celery broker
 # CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_BROKER_POOL_LIMIT = 8
-
-app.conf.update(BROKER_URL=os.environ['REDIS_URL'],
-                CELERY_RESULT_BACKEND=os.environ['REDIS_URL'])
+CELERY_BROKER_URL=os.environ['REDIS_URL']
 
 
 TEMPLATES = [
