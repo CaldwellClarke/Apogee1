@@ -15,7 +15,7 @@ import os
 from decouple import config
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # points us back to the root folder, where manage.py is
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,13 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #HEROKU
-#SECRET_KEY = '6fw*ujba!d-3^a8ez_9*da+2@bt2(-1*4@f7bjuvxas$puux_8'
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = '6fw*ujba!d-3^a8ez_9*da+2@bt2(-1*4@f7bjuvxas$puux_8'
+#SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # shows debug messages in the page 
 #HEROKU 
-#DEBUG = True
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
+#DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = []
 
 
