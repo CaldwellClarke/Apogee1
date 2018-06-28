@@ -46,7 +46,6 @@ class UserRegisterView(FormView):
             captcha_good = True
         else:
             captcha_good = False
-            captcha_good = True
         #Do captcha validation
         if captcha_good:
             new_user = User.objects.create(username=username, email=email)
