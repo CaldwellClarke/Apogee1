@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 #HEROKU 
 #DEBUG = True
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['.apogee.gg']
+ALLOWED_HOSTS = [config('DJANGO_ALLOWED_HOSTS')]
 
 
 AWS_QUERYSTRING_AUTH = False
