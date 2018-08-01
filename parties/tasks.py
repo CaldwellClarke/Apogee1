@@ -7,6 +7,11 @@ from userstatistics import statisticsfunctions
 from .models import Party
 from notifications.models import Notification
 from parties import partyHandling
+from apogee1.utils.email import emailer
+
+winner_text = "You Won!"
+reminder_text = "Your event with {} is soon "
+
 # the shared task just makes it so the celery app can access this
 @shared_task
 # this method takes the list of joined, reorders it randomly, and picks one
@@ -16,7 +21,7 @@ def pick_winner(party_id):
 		# filter would return a queryset, we want an object.
 		party = Party.objects.get(pk=party_id)
 	except Party.DoesNotExist:
-		# if the party is deleted, it does nothing
+		# if the party is deleted, it does nothing; TODO: Hook email notifications into delete action somewhere else
 		return 
 	# for any party that hasnt closed by end time, tell the owner its closing
 	if party.is_open:
@@ -34,6 +39,8 @@ def pick_winner(party_id):
 					winner = pool.first()
 					partyHandling.win_toggle(winner, party)
 					pool = pool.exclude(pk=winner.pk)
+					email_data = {'username': winner.username}
+					emailer.email(winner_text, 'team@apogee.gg', [winner.email], 'winner_email.html', email_data)
 			statisticsfunctions.lottery_update_end_stats(party)
 		#If the party event is a bid and hasnt closed for some reason
 		elif party.event_type==2 and party.is_open:
@@ -44,6 +51,8 @@ def pick_winner(party_id):
 			#add winners in
 			for i in winners:
 				partyHandling.win_toggle(i, party)
+				email_data = {'username': winner.username}
+				emailer.email(winner_text, 'team@apogee.gg', [winner.email], 'winner_email.html', email_data)
 			statisticsfunctions.bid_update_end_stats(party)
 		elif party.event_type==3 and party.is_open:
 			print("Buyout event is over")	
@@ -70,6 +79,8 @@ def pick_winner(party_id):
 		for n in notification_list:
 			Notification.objects.create(user=n, party=party,\
 			action="fan_reminder")
+			email_data = {'username': n.username}
+			emailer.email(reminder_text.format(party.user.username), 'team@apogee.gg', [n.email], 'event_reminder_email.html', email_data)
 	Notification.objects.create(user=party.user, party=party,\
 	action="owner_reminder")
 

@@ -1,0 +1,68 @@
+/*
+css for:
+userstatistics/templates/userstatistics.statistics_info_list.html
+*/
+
+#number_statistics{
+	padding-left: 6em;
+}
+#num_events_description{
+	display: inline-block;
+
+}
+#average_earnings_description{
+	display: inline-block;
+}
+#total_earnings_description{
+	display: inline-block;
+}
+#misc_description{
+	display: inline-block;
+}
+#num_events_val{
+	display: inline-block;
+}
+#total_earnings_val{
+	display: inline-block;
+}
+#average_earnings_val{
+	display: inline-block;
+}
+#misc_val{
+	display: inline-block;
+}
+
+#num_events{
+	position: relative;
+    
+}
+#total_profit{
+	position: relative;
+}
+#average_profit{
+	position: relative;
+}
+#max_profit{
+	position: relative;
+}
+
+
+#graphic_display{
+}
+#join_time{
+	width:37em;
+	display: inline-block;
+}
+#star_time{
+	width:37em;
+	display: inline-block;
+
+}
+#join_event_time{
+	width:37em;
+	display: inline-block;
+}
+#star_event_time{
+	display: inline-block;
+	width:37em;
+}

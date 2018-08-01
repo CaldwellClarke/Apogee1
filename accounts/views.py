@@ -16,6 +16,7 @@ from decouple import config
 from .models import UserProfile
 from .forms import UserRegisterForm, UserProfileModelForm
 from .mixins import ProfileOwnerMixin
+from apogee1.utils.email import emailer
 
 # Create your views here.
 User = get_user_model()
@@ -55,10 +56,11 @@ class UserRegisterView(FormView):
            # captcha_good = True
         #Do captcha validation
         if captcha_good:
-            send_mail('Account Registration Success!', welcome_message, 'team@apogee.gg', [email], fail_silently=False)
             new_user = User.objects.create(username=username, email=email)
             new_user.set_password(password)
             new_user.save()
+            email_data = {'username': username}
+            emailer.email('Account Registration Success!', 'team@apogee.gg', [email], 'creation_email.html', email_data)
 
         else:
             return HttpResponseRedirect("/register")
